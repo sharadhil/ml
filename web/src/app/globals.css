@@ -120,3 +120,195 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ---------- Quote Quest ---------- */
+
+html .retro {
+  font-family: var(--font-pixel), "Press Start 2P", ui-monospace, monospace;
+}
+
+body {
+  background-image:
+    linear-gradient(var(--qq-grid) 2px, transparent 2px),
+    linear-gradient(90deg, var(--qq-grid) 2px, transparent 2px);
+  background-size: 32px 32px;
+}
+
+:root {
+  --qq-grid: oklch(0 0 0 / 4%);
+}
+
+.dark {
+  --qq-grid: oklch(1 0 0 / 4%);
+}
+
+.title-shadow {
+  text-shadow:
+    3px 3px 0 #f472b6,
+    6px 6px 0 #38bdf8;
+}
+
+/* The CRT "screen" inside the cabinet. Always dark, in both themes. */
+.screen {
+  background: radial-gradient(ellipse at 50% 120%, #2a1b5e 0%, #0b0b1e 60%);
+  box-shadow:
+    inset 0 0 0 4px #0b0b14,
+    inset 0 0 60px rgb(0 0 0 / 80%);
+  image-rendering: pixelated;
+}
+
+.crt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(to bottom, rgb(0 0 0 / 22%) 0 2px, transparent 2px 4px),
+    radial-gradient(ellipse at center, transparent 60%, rgb(0 0 0 / 45%) 100%);
+  animation: flicker 6s infinite steps(1);
+}
+
+.star {
+  background: #fff;
+  animation: twinkle 3s infinite steps(2);
+}
+
+.moon {
+  background: #fef3c7;
+  box-shadow:
+    inset -10px -6px 0 0 #fcd34d,
+    0 0 0 4px #0b0b14;
+  clip-path: polygon(
+    25% 0, 75% 0, 75% 12.5%, 87.5% 12.5%, 87.5% 25%, 100% 25%, 100% 75%,
+    87.5% 75%, 87.5% 87.5%, 75% 87.5%, 75% 100%, 25% 100%, 25% 87.5%,
+    12.5% 87.5%, 12.5% 75%, 0 75%, 0 25%, 12.5% 25%, 12.5% 12.5%, 25% 12.5%
+  );
+}
+
+/* Stepped city silhouette along the bottom of the screen. */
+.skyline {
+  background:
+    linear-gradient(#151033, #151033) 0 100% / 100% 16px no-repeat,
+    linear-gradient(#1c1645, #1c1645) 4% 100% / 9% 44px no-repeat,
+    linear-gradient(#1c1645, #1c1645) 16% 100% / 6% 60px no-repeat,
+    linear-gradient(#1c1645, #1c1645) 27% 100% / 11% 36px no-repeat,
+    linear-gradient(#1c1645, #1c1645) 44% 100% / 7% 52px no-repeat,
+    linear-gradient(#1c1645, #1c1645) 58% 100% / 10% 40px no-repeat,
+    linear-gradient(#1c1645, #1c1645) 73% 100% / 6% 64px no-repeat,
+    linear-gradient(#1c1645, #1c1645) 86% 100% / 12% 30px no-repeat;
+}
+
+.ground {
+  background: repeating-linear-gradient(90deg, #0b0b14 0 8px, transparent 8px 12px);
+  opacity: 0.7;
+}
+
+/* Final Fantasy style dialogue window with a notched pixel border. */
+.dialogue {
+  background: linear-gradient(180deg, #2b3a9e 0%, #121a5c 100%);
+  box-shadow:
+    0 0 0 3px #f8fafc,
+    0 0 0 6px #0b0b14,
+    0 0 24px 2px color-mix(in srgb, var(--qq-accent) 45%, transparent),
+    6px 6px 0 6px rgb(0 0 0 / 35%);
+  animation: pop-in 220ms steps(4);
+  transition: transform 80ms steps(2);
+}
+
+.dialogue:hover {
+  transform: translateY(-2px);
+}
+
+.dialogue:focus-visible {
+  outline: 3px dashed var(--qq-accent);
+  outline-offset: 10px;
+}
+
+.caret {
+  display: inline-block;
+  width: 0.6em;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  background: var(--qq-accent);
+  animation: blink 0.6s infinite steps(1);
+}
+
+.confetti {
+  animation-name: confetti;
+  animation-timing-function: steps(12);
+  animation-fill-mode: forwards;
+}
+
+.level-flash {
+  background: #fff;
+  animation: flash 500ms steps(3) forwards;
+}
+
+.animate-bob {
+  animation: bob 1.6s infinite steps(2);
+}
+
+.animate-hop {
+  animation: hop 2.4s infinite steps(4);
+}
+
+.animate-talk {
+  animation: talk 0.25s infinite steps(1);
+}
+
+.animate-blink {
+  animation: blink 1s infinite steps(1);
+}
+
+@keyframes twinkle {
+  50% { opacity: 0.2; }
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@keyframes bob {
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes hop {
+  0%, 70%, 100% { transform: translateY(0); }
+  80% { transform: translateY(-10px); }
+  90% { transform: translateY(-4px); }
+}
+
+@keyframes talk {
+  50% { transform: translateY(-2px) scaleY(1.03); }
+}
+
+@keyframes pop-in {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes flash {
+  from { opacity: 0.8; }
+  to { opacity: 0; }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  48% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+@keyframes confetti {
+  from { transform: translate(0, -10px) rotate(0); opacity: 1; }
+  to { transform: translate(var(--drift), 420px) rotate(270deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star, .crt::after, .animate-bob, .animate-hop, .animate-talk,
+  .dialogue, .confetti, .level-flash {
+    animation: none !important;
+  }
+  .confetti { display: none; }
+}
