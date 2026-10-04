@@ -15,10 +15,14 @@ const TELEMETRY = [
 export function Hero() {
   const [status, setStatus] = useState<BlackHoleStatus>('loading');
   const [revealed, setRevealed] = useState(false);
+  const [failure, setFailure] = useState('');
 
   const onStatusChange = useCallback((next: BlackHoleStatus, error?: unknown) => {
     setStatus(next);
-    if (next === 'error') console.warn('[UMBRA-1] WebGPU unavailable, using still fallback.', error);
+    if (next === 'error') {
+      console.warn('[UMBRA-1] WebGPU unavailable, using still fallback.', error);
+      setFailure(describeFailure(error));
+    }
     if (next !== 'loading') setRevealed(true);
   }, []);
 
@@ -133,7 +137,7 @@ export function Hero() {
 
       <p className="hint reveal" style={delay('1.6s')}>
         {status === 'error' ? (
-          'WebGPU unavailable — showing a still. Open in a WebGPU browser for the live simulation.'
+          `Showing a still — ${failure}`
         ) : (
           <>
             <span className="hint__dot" /> Move to orbit the horizon
@@ -163,4 +167,13 @@ function MissionClock() {
 /** Staggered entrance delay, consumed by `.reveal` in styles.css. */
 function delay(seconds: string): CSSProperties {
   return { '--d': seconds } as CSSProperties;
+}
+
+/** One line explaining why the live simulation could not start. */
+function describeFailure(error: unknown): string {
+  if (!('gpu' in navigator)) {
+    return 'this browser has WebGPU turned off or unsupported. Try Chrome, or Safari 26+.';
+  }
+  const message = error instanceof Error ? error.message : String(error ?? '');
+  return `WebGPU failed to start${message ? `: ${message}` : '.'}`;
 }
