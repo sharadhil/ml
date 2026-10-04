@@ -17,9 +17,13 @@ shows a CSS still of the black hole and says so.
 
 - `src/black-hole/` — the example, pulled with
   `npx vgpu examples pull black-hole` (revision `6fa27bb4…`).
-  `renderer.ts`, `pipeline.ts` and all `.wgsl` shaders are unmodified.
-  `index.tsx` is adapted: plain CSS classes instead of Tailwind, and an
-  `onStatusChange` callback that reports `renderer.ready` instead of discarding it.
+  `pipeline.ts` and all `.wgsl` shaders are unmodified. Adapted files:
+  - `index.tsx`: plain CSS classes instead of Tailwind, and an `onStatusChange`
+    callback that reports `renderer.ready` instead of discarding it.
+  - `renderer.ts`: the raymarch pass renders at an adaptive fraction of the
+    canvas resolution (35–100%, tuned from measured frame times) and the
+    composite pass upscales it, so it stays smooth full-screen on any GPU.
+    Orbit easing is time-based instead of per-frame.
 - `src/Hero.tsx` — copy, HUD, telemetry, letterbox reveal.
 - `src/styles.css` — all styling, including the example's container classes.
 - `vite.config.ts` — registers vgpu's `wgslVitePlugin` so `.wgsl` imports become

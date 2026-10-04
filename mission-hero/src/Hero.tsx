@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState, type CSSProperties } from 'react';
 import { Example as BlackHole, type BlackHoleStatus } from './black-hole';
 
-// If the GPU takes unusually long to compile, open the shutters anyway so the
-// page never sits on a black screen.
-const REVEAL_TIMEOUT_MS = 6000;
+// The page reveals as soon as its fonts are in (never later than this); the
+// black hole fades in on its own once the GPU has compiled its shaders.
+const REVEAL_MAX_WAIT_MS = 700;
 
 const TELEMETRY = [
   ['Target', 'Sagittarius A*'],
@@ -23,12 +23,19 @@ export function Hero() {
       console.warn('[UMBRA-1] WebGPU unavailable, using still fallback.', error);
       setFailure(describeFailure(error));
     }
-    if (next !== 'loading') setRevealed(true);
   }, []);
 
   useEffect(() => {
-    const id = window.setTimeout(() => setRevealed(true), REVEAL_TIMEOUT_MS);
-    return () => window.clearTimeout(id);
+    let cancelled = false;
+    const reveal = () => {
+      if (!cancelled) setRevealed(true);
+    };
+    const id = window.setTimeout(reveal, REVEAL_MAX_WAIT_MS);
+    document.fonts?.ready.then(reveal, reveal);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(id);
+    };
   }, []);
 
   return (
@@ -138,6 +145,10 @@ export function Hero() {
       <p className="hint reveal" style={delay('1.6s')}>
         {status === 'error' ? (
           `Showing a still — ${failure}`
+        ) : status === 'loading' ? (
+          <>
+            <span className="pulse" /> Acquiring signal
+          </>
         ) : (
           <>
             <span className="hint__dot" /> Move to orbit the horizon
